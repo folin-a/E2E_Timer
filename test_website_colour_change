@@ -1,0 +1,33 @@
+#US:
+#Som användare
+#vill jag kunna byta färgtema på webbsidan
+#så att jag kan använda ett utseende som passar mig
+#
+#Acceptans:
+#1. Det ska finnas fyra tema-knappar med namnen Dark, Light, Forest och Orange.
+#2. När jag klickar på en tema-knapp ändras data-theme-attributet på <body> till det valda temat (t.ex. data-theme="forest").
+#3. När ett tema aktiveras ska background-colour på <body> ändras till det värde som definieras i CSS-variabeln --body-bg för det temat.
+#4. Temat ska behållas tills användaren aktivt väljer ett annat tema.
+#
+
+import re
+from test_add_remove_timers import navigate_to_website
+from playwright.sync_api import Page, expect
+
+THEME_BODY_COLORS = {
+    "forest": "#064806",        
+    "dark": "#141414",             
+    "light": "#F3F3F3",
+    "orange": "#E1B972",
+}
+
+def test_switch_theme(page: Page):
+    navigate_to_website(page)
+
+    for theme, hex_color in THEME_BODY_COLORS.items():
+
+        page.get_by_role("button").get_by_text(re.compile(theme, re.IGNORECASE)).click()
+
+        expect(page.locator("body")).to_have_attribute("data-theme", theme)
+
+        expect(page.locator("body")).to_have_css("background-color", hex_color)
